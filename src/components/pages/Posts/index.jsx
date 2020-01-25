@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import List from "./components/List";
 import Nav from "./components/Nav";
 import AddForm from "./components/AddForm";
-import { fetchCreatePost } from "./helpers";
+import { fetchCreatePost, fetchListPosts, fetchRemovePost } from "./helpers";
 
 const Posts = () => {
   const [state, setState] = useState({
-    isShowAddForm: false
+    isShowAddForm: false,
+    posts: []
   });
+
+  useEffect(() => {
+    fetchListPosts().then(data =>
+      setState({
+        ...state,
+        posts: data.posts
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const showAddForm = () =>
     setState({
@@ -28,17 +39,32 @@ const Posts = () => {
       title: e.target.title.value,
       short_description: e.target.short_description.value,
       full_description: e.target.full_description.value,
-      status: true,
-      seo_url: e.target.title.value
+      status: e.target.status.checked,
+      seo_url: e.target.seo_url.value
     };
 
-    fetchCreatePost(dataSend);
+    fetchCreatePost(dataSend).then(data => {
+      setState({
+        ...state,
+        isShowAddForm: false,
+        posts: [data.post, ...state.posts]
+      });
+    });
+  };
+
+  const removePost = id => {
+    fetchRemovePost(id).then(() => {
+      setState({
+        ...state,
+        posts: state.posts.filter(item => item.id !== id)
+      });
+    });
   };
 
   return (
     <>
       <Nav showAddForm={showAddForm} />
-      <List />
+      <List posts={state.posts} removePost={removePost} />
       <AddForm
         onSubmit={createPost}
         hide={hideAddForm}

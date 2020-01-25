@@ -1,4 +1,5 @@
 import React from "react";
+import Btn from "components/shared/Btn";
 import styles from "./styles.module.scss";
 
 const AddForm = props => {
@@ -11,10 +12,14 @@ const AddForm = props => {
   return (
     <div className={styles.wrap}>
       <form onSubmit={onSubmit} className={styles.root}>
-        <button className={styles.close} type="button" onClick={hide}>
-          x
-        </button>
+        <Btn type="del" onClick={hide} />
+
         <input name="title" type="text" placeholder="Title" />
+        <input name="seo_url" type="text" placeholder="Seo url" />
+        <label htmlFor="#status-post">
+          Post status
+          <input name="status" id="status-post" type="checkbox" />
+        </label>
         <input
           name="short_description"
           type="text"

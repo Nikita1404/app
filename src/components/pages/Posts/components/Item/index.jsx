@@ -1,18 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Btn from "components/shared/Btn";
 import styles from "./styles.module.scss";
 
-const Item = ({ post }) => {
+const Item = ({ post, removePost }) => {
   const {
+    id,
     title,
     short_description: shortDescription,
     date_update: { date }
   } = post;
 
-  const dateValue = new Date(date).toLocaleDateString();
+  const dateValue = new Date(id).toLocaleDateString();
+  const remove = () => removePost(id);
 
   return (
     <div className={styles.root}>
+      <Btn type="del" onClick={remove} />
+
       <span>{dateValue}</span>
       <h2 className={styles.title}>{title}</h2>
       <p className={styles.description}>{shortDescription}</p>
