@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Btn from "components/shared/Btn";
 import styles from "./styles.module.scss";
 
-const Item = ({ post, removePost }) => {
+const Item = ({ post, removePost, showEditForm }) => {
   const {
     id,
     title,
@@ -11,12 +11,14 @@ const Item = ({ post, removePost }) => {
     date_update: { date }
   } = post;
 
-  const dateValue = new Date(id).toLocaleDateString();
+  const dateValue = new Date(date).toLocaleDateString();
   const remove = () => removePost(id);
+  const edit = () => showEditForm(post);
 
   return (
     <div className={styles.root}>
       <Btn type="del" onClick={remove} />
+      <Btn type="edit" onClick={edit} />
 
       <span>{dateValue}</span>
       <h2 className={styles.title}>{title}</h2>

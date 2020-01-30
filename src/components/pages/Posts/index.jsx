@@ -1,35 +1,53 @@
 import React, { useState, useEffect } from "react";
 import List from "./components/List";
 import Nav from "./components/Nav";
-import AddForm from "./components/AddForm";
-import { fetchCreatePost, fetchListPosts, fetchRemovePost } from "./helpers";
+import PostForm from "./components/PostForm";
+import {
+  fetchCreatePost,
+  fetchListPosts,
+  fetchRemovePost,
+  initialPost
+} from "./helpers";
 
 const Posts = () => {
   const [state, setState] = useState({
-    isShowAddForm: false,
-    posts: []
+    isShowForm: false,
+    posts: [],
+    post: initialPost
   });
 
-  useEffect(() => {
-    fetchListPosts().then(data =>
+  const updatePosts = (isShowForm = false) => {
+    return fetchListPosts().then(posts =>
       setState({
         ...state,
-        posts: data.posts
+        isShowForm,
+        posts
       })
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  useEffect(() => {
+    updatePosts();
   }, []);
 
-  const showAddForm = () =>
+  const showForm = () =>
     setState({
       ...state,
-      isShowAddForm: true
+      isShowForm: true
     });
 
-  const hideAddForm = () =>
+  const hideForm = () =>
     setState({
       ...state,
-      isShowAddForm: false
+      post: initialPost,
+      isShowForm: false
+    });
+
+  const showEditForm = post =>
+    setState({
+      ...state,
+      post,
+      isShowForm: true
     });
 
   const createPost = e => {
@@ -43,32 +61,47 @@ const Posts = () => {
       seo_url: e.target.seo_url.value
     };
 
-    fetchCreatePost(dataSend).then(data => {
-      setState({
-        ...state,
-        isShowAddForm: false,
-        posts: [data.post, ...state.posts]
-      });
+    fetchCreatePost(dataSend).then(() => {
+      updatePosts();
+    });
+  };
+
+  const editPost = e => {
+    e.preventDefault();
+
+    const dataSend = {
+      title: e.target.title.value,
+      short_description: e.target.short_description.value,
+      full_description: e.target.full_description.value,
+      status: e.target.status.checked,
+      seo_url: e.target.seo_url.value
+    };
+
+    fetchCreatePost(dataSend).then(() => {
+      updatePosts();
     });
   };
 
   const removePost = id => {
     fetchRemovePost(id).then(() => {
-      setState({
-        ...state,
-        posts: state.posts.filter(item => item.id !== id)
-      });
+      updatePosts();
     });
   };
 
   return (
     <>
-      <Nav showAddForm={showAddForm} />
-      <List posts={state.posts} removePost={removePost} />
-      <AddForm
-        onSubmit={createPost}
-        hide={hideAddForm}
-        isShow={state.isShowAddForm}
+      <Nav showForm={showForm} />
+      <List
+        posts={state.posts}
+        removePost={removePost}
+        showEditForm={showEditForm}
+      />
+      <PostForm
+        post={state.post}
+        onSubmitEdit={editPost}
+        onSubmitCreate={createPost}
+        hide={hideForm}
+        isShow={state.isShowForm}
       />
     </>
   );
