@@ -4,7 +4,7 @@ import styles from "./styles.module.scss";
 const Footer = () => {
   return (
     <div className={styles.root}>
-      <h4>Web dev Alex Axenov 2020</h4>
+      <h4>Web dev</h4>
     </div>
   );
 };
